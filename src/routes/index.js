@@ -3,11 +3,11 @@ const express = require("express");
 const router = express.Router();
 
 // Modules
-const userRoutes = require("../modules/users/user.routes");
 const vehicleRoutes = require("../modules/vehicles").vehicleRoutes;
+const authRoutes = require("../modules/auth").authRoutes;
 
 // Montage des routes
-router.use("/users", userRoutes);
+router.use("/auth", authRoutes);
 router.use("/", vehicleRoutes);
 
 module.exports = router;
