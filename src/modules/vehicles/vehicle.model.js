@@ -168,8 +168,7 @@ async function createVehicle(vehicle) {
         id: result.insertId,
         driver_id,
         category_id,
-        plate,
-        is_available: 1 // Par defaut, le vehicule est disponible
+        plate
     };
 }
 
