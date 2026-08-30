@@ -30,7 +30,7 @@ cp .env.example .env
 mysql -u root -e "CREATE DATABASE nzanira;"
 
 # 5. Importer le schema (si disponible)
-mysql -u root nzanira < database/schema.sql
+mysql -u root nzanira < database/nzanira.sql
 
 # 6. Lancer le serveur
 npm run dev
