@@ -70,6 +70,11 @@ async function findVehicles(filters = {}) {
         params.push(filters.is_available);
     }
 
+    if (filters.plate) {
+        query += " AND v.plate = ?";
+        params.push(filters.plate);
+    }
+
     // Trier par date de creation (plus recent en premier)
     query += " ORDER BY v.created_at DESC";
 

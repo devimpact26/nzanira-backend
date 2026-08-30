@@ -63,6 +63,7 @@ async function getVehicleById(id) {
     if (!vehicle) {
         const error = new Error("Vehicule introuvable");
         error.statusCode = 404;
+        error.isOperational = true;
         throw error;
     }
 
@@ -104,6 +105,7 @@ async function createVehicle(vehicleData) {
     if (existingVehicles.length > 0) {
         const error = new Error("Cette plaque est deja utilisee par un autre vehicule");
         error.statusCode = 409; // 409 = Conflict
+        error.isOperational = true;
         throw error;
     }
 
@@ -131,6 +133,7 @@ async function updateVehicle(id, updates) {
     if (!vehicle) {
         const error = new Error("Vehicule introuvable");
         error.statusCode = 404;
+        error.isOperational = true;
         throw error;
     }
 
@@ -141,6 +144,7 @@ async function updateVehicle(id, updates) {
         if (existingVehicles.length > 0) {
             const error = new Error("Cette plaque est deja utilisee");
             error.statusCode = 409;
+            error.isOperational = true;
             throw error;
         }
     }
@@ -168,6 +172,7 @@ async function deleteVehicle(id) {
     if (!vehicle) {
         const error = new Error("Vehicule introuvable");
         error.statusCode = 404;
+        error.isOperational = true;
         throw error;
     }
 
@@ -192,6 +197,7 @@ async function getCategoryById(id) {
     if (!category) {
         const error = new Error("Categorie introuvable");
         error.statusCode = 404;
+        error.isOperational = true;
         throw error;
     }
 
@@ -208,6 +214,7 @@ async function updateCategory(id, updates) {
     if (!category) {
         const error = new Error("Categorie introuvable");
         error.statusCode = 404;
+        error.isOperational = true;
         throw error;
     }
 
@@ -220,6 +227,7 @@ async function deleteCategory(id) {
     if (!category) {
         const error = new Error("Categorie introuvable");
         error.statusCode = 404;
+        error.isOperational = true;
         throw error;
     }
 

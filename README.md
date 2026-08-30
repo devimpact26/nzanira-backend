@@ -383,8 +383,84 @@ C'est fait. Le module est accessible via `/api/mamodule`.
 
 ---
 
+## Tester les APIs
+
+### Avant de tester
+
+1. Demarrer le serveur : `npm run dev`
+2. Verifier que MySQL est lance
+3. Ouvrir un 2eme terminal pour les commandes
+
+### Methode 1 : PowerShell (rien a installer)
+
+```powershell
+# GET - Lister les vehicules
+Invoke-RestMethod -Uri "http://localhost:3000/api/vehicles" -Method GET | ConvertTo-Json -Depth 5
+
+# GET - Un vehicule par ID
+Invoke-RestMethod -Uri "http://localhost:3000/api/vehicles/1" -Method GET | ConvertTo-Json -Depth 5
+
+# POST - Creer un vehicule
+$body = @{ driver_id = 2; category_id = 1; plate = "B 1234 X" } | ConvertTo-Json
+Invoke-RestMethod -Uri "http://localhost:3000/api/vehicles" -Method POST -Body $body -ContentType "application/json" | ConvertTo-Json -Depth 5
+
+# PUT - Modifier un vehicule
+$body = @{ plate = "B 5678 Y"; is_available = 0 } | ConvertTo-Json
+Invoke-RestMethod -Uri "http://localhost:3000/api/vehicles/1" -Method PUT -Body $body -ContentType "application/json" | ConvertTo-Json -Depth 5
+
+# DELETE - Supprimer un vehicule
+Invoke-RestMethod -Uri "http://localhost:3000/api/vehicles/1" -Method DELETE | ConvertTo-Json -Depth 5
+```
+
+### Methode 2 : Thunder Client (extension VS Code — recommande)
+
+1. Ouvre VS Code
+2. Installe l'extension "Thunder Client"
+3. Clique sur l'icone Thunder Client dans la barre laterale
+4. Clique "New Request"
+5. Choisis la methode (GET, POST, PUT, DELETE)
+6. Colle l'URL : `http://localhost:3000/api/vehicles`
+7. Pour POST/PUT : onglet Body → JSON → colles le JSON
+8. Clique "Send"
+
+Exemple de body JSON :
+
+```json
+{
+    "driver_id": 2,
+    "category_id": 1,
+    "plate": "B 9999 Z"
+}
+```
+
+### Methode 3 : Navigateur (GET uniquement)
+
+Tape directement l'URL dans le navigateur :
+
+- `http://localhost:3000/api/vehicles`
+- `http://localhost:3000/api/vehicle-categories`
+- `http://localhost:3000/api/vehicles/1`
+
+### Tous les endpoints a tester
+
+| Methode | URL                               | Description                 |
+| ------- | --------------------------------- | --------------------------- |
+| GET     | `/api/vehicle-categories`         | Liste les categories        |
+| GET     | `/api/vehicle-categories/1`       | Detail d'une categorie      |
+| GET     | `/api/vehicles`                   | Liste tous les vehicules    |
+| GET     | `/api/vehicles?category_id=1`     | Filtrer par categorie       |
+| GET     | `/api/vehicles?is_available=1`    | Filtrer par disponibilite   |
+| GET     | `/api/vehicles/1`                 | Detail d'un vehicule        |
+| GET     | `/api/vehicles/driver/2`          | Vehicules d'un chauffeur    |
+| POST    | `/api/vehicles`                   | Creer un vehicule           |
+| PUT     | `/api/vehicles/1`                 | Modifier un vehicule        |
+| DELETE  | `/api/vehicles/1`                 | Supprimer un vehicule       |
+
+---
+
 ## Aide
 
 - Lire `AGENTS.md` pour les conventions de code
 - En cas de bug, verifier les logs dans le terminal
 - Le serveur doit toujours etre lance avec `npm run dev`
+
