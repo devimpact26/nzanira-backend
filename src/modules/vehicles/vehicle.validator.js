@@ -1,4 +1,10 @@
-// =====================================================================
+ /* 
+ * Développeur : DUSHIME PAUL
+ * Email       : dushimapaul@gmail.com
+ * Module      : Auth & Vehicles
+ */
+
+ // =====================================================================
 // vehicle.validator.js
 // -----------------------------------------------------------------
 // ROLE : Valider les donnees AVANT qu'elles n'arrivent au controller.
@@ -41,6 +47,9 @@ const createVehicleSchema = Joi.object({
             "string.max": "La plaque ne peut pas depasser 20 caracteres"
         })
 });
+
+
+
 
 // --- Schema pour MODIFIER un vehicule (PUT /api/vehicles/:id) ---
 // Tous les champs sont optionnels (on ne modifie que ce qu'on envoie)

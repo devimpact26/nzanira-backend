@@ -1,4 +1,10 @@
-// =====================================================================
+ /* 
+ * Développeur : DUSHIME PAUL
+ * Email       : dushimapaul@gmail.com
+ * Module      : Auth & Vehicles
+ */
+
+ // =====================================================================
 // vehicle.model.js
 // -----------------------------------------------------------------
 // ROLE : Communique avec la base de donnees MySQL.

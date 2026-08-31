@@ -1,3 +1,9 @@
+ /* 
+ * Développeur : DUSHIME PAUL
+ * Email       : dushimapaul@gmail.com
+ * Module      : Auth & Vehicles
+ */
+
 const express = require("express");
 const cors = require("cors");
 const { errorHandler } = require("./middleware/errorHandler");

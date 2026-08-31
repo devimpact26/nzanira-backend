@@ -1,4 +1,10 @@
-// =====================================================================
+ /* 
+ * Développeur : DUSHIME PAUL
+ * Email       : dushimapaul@gmail.com
+ * Module      : Auth & Vehicles
+ */
+
+ // =====================================================================
 // vehicle.controller.js
 // -----------------------------------------------------------------
 // ROLE : Recevoir les requetes HTTP et renvoyer les reponses.

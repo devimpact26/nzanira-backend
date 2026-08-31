@@ -1,4 +1,10 @@
-// =====================================================================
+ /* 
+ * Développeur : DUSHIME PAUL
+ * Email       : dushimapaul@gmail.com
+ * Module      : Auth & Vehicles
+ */
+
+ // =====================================================================
 // vehicle.service.js
 // -----------------------------------------------------------------
 // ROLE : Contient la logique metier (les regles de l'application).

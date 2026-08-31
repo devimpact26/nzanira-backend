@@ -1,4 +1,10 @@
-// =====================================================================
+ /* 
+ * Développeur : DUSHIME PAUL
+ * Email       : dushimapaul@gmail.com
+ * Module      : Auth & Vehicles
+ */
+
+ // =====================================================================
 // auth.controller.js
 // -----------------------------------------------------------------
 // Gere les requetes HTTP pour l'authentification.

@@ -1,3 +1,9 @@
+ /* 
+ * Développeur : DUSHIME PAUL
+ * Email       : dushimapaul@gmail.com
+ * Module      : Auth & Vehicles
+ */
+
 // =====================================================================
 // index.js — Barrel Export (Exportations en baril)
 // -----------------------------------------------------------------

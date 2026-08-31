@@ -1,3 +1,9 @@
+ /* 
+ * Développeur : DUSHIME PAUL
+ * Email       : dushimapaul@gmail.com
+ * Module      : Auth & Vehicles
+ */
+
 require("dotenv").config();
 
 const app = require("./app");

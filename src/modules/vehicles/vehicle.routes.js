@@ -1,4 +1,10 @@
-// =====================================================================
+ /* 
+ * Développeur : DUSHIME PAUL
+ * Email       : dushimapaul@gmail.com
+ * Module      : Auth & Vehicles
+ */
+
+ // =====================================================================
 // vehicle.routes.js
 // -----------------------------------------------------------------
 // ROLE : Definit les routes HTTP et les connecte aux controllers.
