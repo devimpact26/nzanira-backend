@@ -11,10 +11,12 @@ const deliveryRoutes = require("../modules/deliveries").deliveryRoutes;
 
 const driverRoutes = require("../modules/drivers").driverRoutes;
 const transportRoutes = require("../modules/transport").transportRoutes;
+const userRoutes = require("../modules/users").usersRoutes;
 
 
 // Montage des routes
 router.use("/auth", authRoutes);
+router.use("/users", userRoutes);
 router.use("/", vehicleRoutes);
 
 router.use("/", materialRoutes);
