@@ -32,6 +32,8 @@ function badRequest(message) {
     return err;
 }
 
+const notificationService = require("../notifications").notificationService;
+
 // ---------- transport_requests ----------
 
 async function getAllRequests(filters) {
@@ -45,7 +47,14 @@ async function getRequestById(id) {
 }
 
 async function createRequest(data) {
-    return transportModel.create(data);
+    const created = await transportModel.create(data);
+
+    // Business Event Rule: When a new demand is published, notify all active drivers
+    notificationService.notifyAllDriversForNewDemand(created).catch(err => {
+        console.error("Erreur lors de la notification des chauffeurs pour la demande :", err);
+    });
+
+    return created;
 }
 
 async function updateRequest(id, userId, data) {
@@ -107,7 +116,7 @@ async function acceptRequest({ request_id, driver_id, vehicle_id }) {
     }
 
     // 2. Le chauffeur doit avoir un profil valide (via le module drivers, pas son model)
-    await driverService.getDriverByUserId(driver_id);
+    const driver = await driverService.getDriverByUserId(driver_id);
 
     // 3. Le véhicule doit exister et appartenir à ce chauffeur (via le module vehicles)
     const vehicle = await vehicleService.getVehicleById(vehicle_id);
@@ -122,6 +131,15 @@ async function acceptRequest({ request_id, driver_id, vehicle_id }) {
     // 5. Créer l'assignation + faire passer la demande à "accepted"
     const assignment = await transportModel.createAssignment({ request_id, driver_id, vehicle_id });
     await transportModel.update(request_id, { status: "accepted" });
+
+    // Business Event Rule: When an offer/demand is accepted, notify the demand owner
+    notificationService.notifyOwnerForAcceptedOffer(
+        request.requester_id,
+        driver.full_name || "Chauffeur",
+        request.id
+    ).catch(err => {
+        console.error("Erreur lors de la notification de l'acceptation :", err);
+    });
 
     return assignment;
 }
