@@ -15,6 +15,7 @@ const userRoutes = require("../modules/users").usersRoutes;
 
 const messagingRoutes = require("../modules/messaging").messagingRoutes;
 const notificationRoutes = require("../modules/notifications").notificationRoutes;
+const reviewRoutes = require("../modules/reviews").reviewRoutes;
 
 
 // Montage des routes
@@ -30,5 +31,6 @@ router.use("/", transportRoutes);
 
 router.use("/", messagingRoutes);
 router.use("/", notificationRoutes);
+router.use("/", reviewRoutes);
 
 module.exports = router;
