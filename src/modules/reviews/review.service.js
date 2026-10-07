@@ -27,7 +27,14 @@ function conflict(message) {
  * Soumettre un avis pour une livraison terminée.
  */
 async function createReview(raterId, reviewData) {
-    const { deliveryId, requestId, reviewedUserId, rating, score, comment } = reviewData;
+    // Le validator accepte les deux notations (camelCase et snake_case de la spec)
+    const deliveryId = reviewData.deliveryId ?? reviewData.delivery_id;
+    const requestId = reviewData.requestId ?? reviewData.request_id;
+    const reviewedUserId = reviewData.reviewedUserId ?? reviewData.rated_id;
+    const rating = reviewData.rating;
+    const score = reviewData.score;
+    const comment = reviewData.comment;
+
     const reviewScore = rating !== undefined ? rating : score;
     const identifier = deliveryId || requestId;
 

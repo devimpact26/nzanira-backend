@@ -28,12 +28,14 @@ async function getUserByIdSafe(userId) {
 function notFound(message) {
     const err = new Error(message);
     err.statusCode = 404;
+    err.isOperational = true;
     return err;
 }
 
 function conflict(message) {
     const err = new Error(message);
     err.statusCode = 409;
+    err.isOperational = true;
     return err;
 }
 
@@ -59,6 +61,7 @@ async function createDriverProfile({ user_id, work_status, company_id }) {
     if (user.role !== "chauffeur") {
         const err = new Error("Cet utilisateur n'a pas le rôle chauffeur");
         err.statusCode = 400;
+        err.isOperational = true;
         throw err;
     }
 
@@ -94,6 +97,7 @@ async function getAvailableDrivers({ lat, lng, radius_km }) {
     if (!lat || !lng) {
         const err = new Error("lat et lng sont requis");
         err.statusCode = 400;
+        err.isOperational = true;
         throw err;
     }
     return driverModel.findAvailable({ lat, lng, radius_km });

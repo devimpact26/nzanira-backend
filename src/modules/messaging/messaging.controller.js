@@ -143,11 +143,30 @@ async function markAsRead(req, res, next) {
     }
 }
 
+/**
+ * PUT /api/messages/:id/read
+ * Marquer UN message (id = message) comme lu.
+ */
+async function markMessageAsRead(req, res, next) {
+    try {
+        const message = await messagingService.markMessageAsRead(req.params.id, req.user.id);
+
+        res.json({
+            success: true,
+            message: "Message marqué comme lu",
+            data: message
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     getConversations,
     getConversationById,
     createConversation,
     getMessages,
     sendMessage,
-    markAsRead
+    markAsRead,
+    markMessageAsRead
 };

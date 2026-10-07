@@ -162,6 +162,19 @@ async function markMessagesAsRead(conversationId, recipientId) {
     return result.affectedRows;
 }
 
+/**
+ * Marquer UN message comme lu (PUT /api/messages/:id/read).
+ */
+async function markMessageAsRead(messageId, recipientId) {
+    const [result] = await pool.query(
+        `UPDATE messages
+         SET is_read = 1
+         WHERE id = ? AND sender_id != ? AND is_read = 0`,
+        [messageId, recipientId]
+    );
+    return result.affectedRows;
+}
+
 module.exports = {
     findConversationById,
     findExistingConversation,
@@ -170,5 +183,6 @@ module.exports = {
     createMessage,
     findMessageById,
     findMessagesByConversation,
-    markMessagesAsRead
+    markMessagesAsRead,
+    markMessageAsRead
 };

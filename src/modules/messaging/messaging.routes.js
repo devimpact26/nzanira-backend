@@ -62,6 +62,7 @@ router.post(
 router.put("/conversations/:id/read", authenticate, messagingController.markAsRead);
 
 // Alias pour compatibilite avec l'API spec (PUT /api/messages/:id/read)
-router.put("/messages/:id/read", authenticate, messagingController.markAsRead);
+// IMPORTANT : ici :id est l'identifiant du MESSAGE (pas de la conversation)
+router.put("/messages/:id/read", authenticate, messagingController.markMessageAsRead);
 
 module.exports = router;

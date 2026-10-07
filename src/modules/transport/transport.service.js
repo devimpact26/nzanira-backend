@@ -11,24 +11,28 @@ const vehicleService = require("../vehicles").vehicleService;
 function notFound(message) {
     const err = new Error(message);
     err.statusCode = 404;
+    err.isOperational = true;
     return err;
 }
 
 function conflict(message) {
     const err = new Error(message);
     err.statusCode = 409;
+    err.isOperational = true;
     return err;
 }
 
 function forbidden(message) {
     const err = new Error(message);
     err.statusCode = 403;
+    err.isOperational = true;
     return err;
 }
 
 function badRequest(message) {
     const err = new Error(message);
     err.statusCode = 400;
+    err.isOperational = true;
     return err;
 }
 

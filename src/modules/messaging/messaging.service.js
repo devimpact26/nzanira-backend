@@ -178,11 +178,39 @@ async function markAsRead(conversationId, userId) {
     return await messagingModel.markMessagesAsRead(conversationId, userId);
 }
 
+/**
+ * Marquer UN message comme lu (PUT /api/messages/:id/read).
+ * @param {number} messageId - identifiant du MESSAGE (pas de la conversation)
+ * @param {number} userId    - utilisateur connecte
+ */
+async function markMessageAsRead(messageId, userId) {
+    const message = await messagingModel.findMessageById(messageId);
+
+    if (!message) {
+        throw notFound("Message introuvable");
+    }
+
+    const conversation = await messagingModel.findConversationById(message.conversation_id);
+
+    if (!conversation) {
+        throw notFound("Conversation introuvable");
+    }
+
+    if (conversation.driver_id !== userId && conversation.owner_id !== userId) {
+        throw forbidden("Vous n'êtes pas autorisé à modifier cette conversation");
+    }
+
+    await messagingModel.markMessageAsRead(messageId, userId);
+
+    return await messagingModel.findMessageById(messageId);
+}
+
 module.exports = {
     getOrCreateConversation,
     getUserConversations,
     getConversationById,
     sendMessage,
     getConversationMessages,
-    markAsRead
+    markAsRead,
+    markMessageAsRead
 };
