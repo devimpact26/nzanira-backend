@@ -25,6 +25,13 @@ async function findUsers(filters = {}) {
     }
 
     query += " ORDER BY created_at DESC";
+
+    // Pagination (regle d'or #9 : ?limit=20&offset=0)
+    const limit = Math.min(Math.max(parseInt(filters.limit, 10) || 20, 1), 100);
+    const offset = Math.max(parseInt(filters.offset, 10) || 0, 0);
+    query += " LIMIT ? OFFSET ?";
+    params.push(limit, offset);
+
     const [rows] = await pool.query(query, params);
     return rows;
 }

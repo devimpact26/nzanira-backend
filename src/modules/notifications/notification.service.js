@@ -68,8 +68,8 @@ async function notifyOwnerForDeliveryUpdate(ownerId, statusText) {
 /**
  * Obtenir la liste des notifications d'un utilisateur.
  */
-async function getUserNotifications(userId, isRead) {
-    return await notificationModel.findUserNotifications(userId, isRead);
+async function getUserNotifications(userId, isRead, limit, offset) {
+    return await notificationModel.findUserNotifications(userId, isRead, limit, offset);
 }
 
 /**
@@ -93,6 +93,21 @@ async function markAllNotificationsAsRead(userId) {
     return await notificationModel.markAllAsRead(userId);
 }
 
+/**
+ * Supprimer une notification.
+ * La suppression est limitee au proprietaire de la notification.
+ */
+async function deleteNotification(id, userId) {
+    const deleted = await notificationModel.deleteNotification(id, userId);
+    if (!deleted) {
+        const error = new Error("Notification introuvable");
+        error.statusCode = 404;
+        error.isOperational = true;
+        throw error;
+    }
+    return true;
+}
+
 module.exports = {
     sendNotification,
     notifyAllDriversForNewDemand,
@@ -101,5 +116,6 @@ module.exports = {
     getUserNotifications,
     getUnreadCount,
     markNotificationAsRead,
-    markAllNotificationsAsRead
+    markAllNotificationsAsRead,
+    deleteNotification
 };

@@ -97,9 +97,35 @@ async function refreshToken(req, res, next) {
     }
 }
 
+/**
+ * POST /api/auth/logout
+ *
+ * Deconnecter l'utilisateur.
+ * Si un refreshToken est fourni dans le body, il est rejete definitivement
+ * (JWT blacklist) et ne pourra plus etre utilise pour rafraichir.
+ */
+async function logout(req, res, next) {
+    try {
+        const { refreshToken } = req.body || {};
+
+        const result = authService.logout(refreshToken);
+
+        res.json({
+            success: true,
+            message: result.revoked
+                ? "Deconnexion reussie, token rejete"
+                : "Deconnexion reussie",
+            data: result
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 module.exports = {
     register,
     login,
     getMe,
-    refreshToken
+    refreshToken,
+    logout
 };

@@ -59,6 +59,44 @@ const updateVehicleSchema = Joi.object({
     is_available: Joi.number().valid(0, 1) // 0 = non disponible, 1 = disponible
 }).min(1); // Au moins 1 champ doit etre fourni
 
+// --- Schema pour CREER une categorie (POST /api/vehicle-categories) ---
+// Sans ce schema, un body vide arrivait au model et causait :
+// "Column 'capacity_min' cannot be null" → erreur 500
+const createCategorySchema = Joi.object({
+    code: Joi.string().max(20).required()
+        .messages({
+            "any.required": "Le code de la categorie est obligatoire",
+            "string.max": "Le code ne peut pas depasser 20 caracteres"
+        }),
+
+    label: Joi.string().min(2).max(60).required()
+        .messages({
+            "any.required": "Le libelle de la categorie est obligatoire",
+            "string.min": "Le libelle doit avoir au moins 2 caracteres"
+        }),
+
+    capacity_min: Joi.number().min(0).required()
+        .messages({
+            "any.required": "La capacite minimale est obligatoire",
+            "number.base": "capacity_min doit etre un nombre"
+        }),
+
+    capacity_max: Joi.number().min(0).required()
+        .messages({
+            "any.required": "La capacite maximale est obligatoire",
+            "number.base": "capacity_max doit etre un nombre"
+        })
+});
+
+// --- Schema pour MODIFIER une categorie (PUT /api/vehicle-categories/:id) ---
+// Tous les champs deviennent optionnels, au moins un est requis
+const updateCategorySchema = Joi.object({
+    code: Joi.string().max(20),
+    label: Joi.string().min(2).max(60),
+    capacity_min: Joi.number().min(0),
+    capacity_max: Joi.number().min(0)
+}).min(1);
+
 // --- Schema pour les QUERY PARAMETERS (filtres GET) ---
 // Ex: GET /api/vehicles?driver_id=1&category_id=2&is_available=1
 const queryVehicleSchema = Joi.object({
@@ -78,6 +116,10 @@ module.exports = {
 
     // Schema pour la modification
     updateVehicleSchema,
+
+    // Schemas pour les categories de vehicules
+    createCategorySchema,
+    updateCategorySchema,
 
     // Schema pour les filtres de recherche
     queryVehicleSchema,

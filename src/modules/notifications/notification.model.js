@@ -54,7 +54,7 @@ async function findNotificationById(id) {
     return rows[0] || null;
 }
 
-async function findUserNotifications(userId, isRead) {
+async function findUserNotifications(userId, isRead, limit, offset) {
     let sql = "SELECT * FROM notifications WHERE user_id = ?";
     const params = [userId];
 
@@ -64,6 +64,12 @@ async function findUserNotifications(userId, isRead) {
     }
 
     sql += " ORDER BY created_at DESC";
+
+    // Pagination (regle d'or #9 : ?limit=20&offset=0)
+    const lim = Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100);
+    const off = Math.max(parseInt(offset, 10) || 0, 0);
+    sql += " LIMIT ? OFFSET ?";
+    params.push(lim, off);
 
     const [rows] = await pool.query(sql, params);
     return rows;
@@ -93,6 +99,17 @@ async function markAllAsRead(userId) {
     return result.affectedRows;
 }
 
+/**
+ * Supprimer une notification (seulement la sienne).
+ */
+async function deleteNotification(id, userId) {
+    const [result] = await pool.query(
+        "DELETE FROM notifications WHERE id = ? AND user_id = ?",
+        [id, userId]
+    );
+    return result.affectedRows > 0;
+}
+
 module.exports = {
     createNotification,
     notifyAllUsersByRole,
@@ -100,5 +117,6 @@ module.exports = {
     findUserNotifications,
     countUnread,
     markAsRead,
-    markAllAsRead
+    markAllAsRead,
+    deleteNotification
 };

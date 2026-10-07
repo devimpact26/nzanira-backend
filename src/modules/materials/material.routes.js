@@ -9,25 +9,32 @@ const {
     updateMaterialSchema
 } = require("./material.validator");
 
+// JWT obligatoire : toutes les routes sauf /auth/register et /auth/login
+// (regle d'or #8). Avant correction, ces routes repondaient 200/201
+// sans aucun token.
+const { authenticate } = require("../../middleware/auth.middleware");
+
 // GET /api/materials
-router.get("/materials", materialController.getMaterials);
+router.get("/materials", authenticate, materialController.getMaterials);
 
 // GET /api/materials/:id
-router.get("/materials/:id", materialController.getMaterialById);
+router.get("/materials/:id", authenticate, materialController.getMaterialById);
 
 // POST /api/materials
 router.post("/materials",
+    authenticate,
     validate(createMaterialSchema),
     materialController.createMaterial
 );
 
 // PUT /api/materials/:id
 router.put("/materials/:id",
+    authenticate,
     validate(updateMaterialSchema),
     materialController.updateMaterial
 );
 
 // DELETE /api/materials/:id
-router.delete("/materials/:id", materialController.deleteMaterial);
+router.delete("/materials/:id", authenticate, materialController.deleteMaterial);
 
 module.exports = router;

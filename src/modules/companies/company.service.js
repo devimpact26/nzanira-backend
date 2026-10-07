@@ -1,33 +1,76 @@
 const CompanyModel = require('./company.model');
 
+// =====================================================================
+// company.service.js
+// ---------------------------------------------------------------------
+// Logique métier du module Companies (sociétés de transport).
+// =====================================================================
+
+function httpError(status, message) {
+    const error = new Error(message);
+    // `status` est lu par le controller, `statusCode` par le errorHandler global
+    error.status = status;
+    error.statusCode = status;
+    error.isOperational = true;
+    return error;
+}
+
 const CompanyService = {
-  getAll: async ({ type, search, page = 1, limit = 20 }) => {
-    const offset = (Number(page) - 1) * Number(limit);
-    const [data, total] = await Promise.all([CompanyModel.getAll({ type, search, limit, offset }), CompanyModel.count({ type, search })]);
-    return { data, pagination: { total, page: Number(page), limit: Number(limit), pages: Math.ceil(total / Number(limit)) } };
+
+  getAll: async ({ search, limit, offset }) => {
+    // Regle d'or #9 : pagination par defaut ?limit=20&offset=0
+    const lim = Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100);
+    const off = Math.max(parseInt(offset, 10) || 0, 0);
+
+    const [data, total] = await Promise.all([
+      CompanyModel.getAll({ search, limit: lim, offset: off }),
+      CompanyModel.count({ search })
+    ]);
+
+    return {
+      data,
+      pagination: { total, limit: lim, offset: off, pages: Math.ceil(total / lim) }
+    };
   },
+
   search: async (q) => {
-    if (!q || q.trim().length < 2) throw { status: 400, message: 'Le paramètre q doit avoir au moins 2 caractères.' };
-    return CompanyModel.getAll({ search: q.trim(), limit: 10, offset: 0 });
+    if (!q || q.trim().length < 2) {
+      throw httpError(400, 'Le paramètre q doit avoir au moins 2 caractères.');
+    }
+    return CompanyModel.getAll({ search: q.trim(), limit: 20, offset: 0 });
   },
-  getOne: async (userId) => {
-    const company = await CompanyModel.findByUserId(userId);
-    if (!company) throw { status: 404, message: 'Entreprise introuvable.' };
+
+  getById: async (id) => {
+    const company = await CompanyModel.findById(id);
+    if (!company) throw httpError(404, 'Société introuvable.');
     return company;
   },
-  update: async (userId, requesterId, requesterRole, { company_name, business_registry_number }) => {
-    if (requesterRole !== 'admin' && requesterId !== userId) throw { status: 403, message: 'Accès refusé.' };
-    const user = await CompanyModel.getOwnerRole(userId);
-    if (!user) throw { status: 404, message: 'Utilisateur introuvable.' };
-    if (company_name) await CompanyModel.updateCompanyName(userId, user.role, company_name);
-    if (business_registry_number && user.role === 'fournisseur') await CompanyModel.updateRegistry(userId, business_registry_number);
-    return CompanyModel.findByUserId(userId);
+
+  create: async (data) => {
+    const existing = await CompanyModel.getAll({ search: data.name, limit: 100, offset: 0 });
+    const duplicate = existing.find(
+      (c) => c.name.toLowerCase() === data.name.trim().toLowerCase()
+    );
+    if (duplicate) throw httpError(409, 'Une société porte déjà ce nom.');
+    return CompanyModel.create(data);
   },
-  getUsers: async (userId, requesterId, requesterRole) => {
-    if (requesterRole !== 'admin' && requesterId !== userId) throw { status: 403, message: 'Accès refusé.' };
-    const company = await CompanyModel.findByUserId(userId);
-    if (!company || !company.company_name) throw { status: 404, message: 'Entreprise introuvable.' };
-    return CompanyModel.getUsersByCompany(company.company_name);
+
+  update: async (id, updates) => {
+    const existing = await CompanyModel.findById(id);
+    if (!existing) throw httpError(404, 'Société introuvable.');
+    return CompanyModel.update(id, updates);
+  },
+
+  remove: async (id) => {
+    const deleted = await CompanyModel.delete(id);
+    if (!deleted) throw httpError(404, 'Société introuvable.');
+    return true;
+  },
+
+  getDrivers: async (id) => {
+    const company = await CompanyModel.findById(id);
+    if (!company) throw httpError(404, 'Société introuvable.');
+    return CompanyModel.findDrivers(id);
   },
 };
 

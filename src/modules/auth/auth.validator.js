@@ -70,10 +70,18 @@ const refreshSchema = Joi.object({
         })
 });
 
+// --- Schema pour DECONNEXION (POST /api/auth/logout) ---
+// Le refreshToken est optionnel : s'il est fourni, il est rejete de facon
+// definitive (blacklist) et ne pourra plus etre utilise pour rafraichir.
+const logoutSchema = Joi.object({
+    refreshToken: Joi.string().optional()
+});
+
 module.exports = {
     registerSchema,
     loginSchema,
     refreshSchema,
+    logoutSchema,
 
     // Middleware de validation
     validate(schema, property = "body") {

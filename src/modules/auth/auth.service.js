@@ -23,6 +23,37 @@ const JWT_SECRET = process.env.JWT_SECRET || "nzanapp-secret-change-in-productio
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 const REFRESH_EXPIRES_IN = "30d";
 
+// ---------------------------------------------------------------------
+// JWT BLACKLIST (POST /api/auth/logout)
+// ---------------------------------------------------------------------
+// Les tokens JWT sont "stateless" : une fois emis, ils restent valides
+// jusqu'a leur expiration. Pour permettre une vraie deconnexion, on
+// memorise ici les refreshTokens qui ont ete revoques.
+//
+// NOTE : cette liste est en memoire (reinitialisee au redemarrage du
+// serveur). En production, la stocker dans une table MySQL avec une
+// date d'expiration (ex: table token_blacklist) et la purger
+// automatiquement.
+// ---------------------------------------------------------------------
+const revokedRefreshTokens = new Set();
+
+/**
+ * Deconnecter un utilisateur (POST /api/auth/logout).
+ *
+ * Revoque le refreshToken fourni afin qu'il ne puisse plus etre utilise
+ * pour obtenir de nouveaux tokens d'acces.
+ *
+ * @param {string} [refreshToken] - Le token a revoquer
+ * @returns {Object} { revoked: boolean }
+ */
+function logout(refreshToken) {
+    if (refreshToken) {
+        revokedRefreshTokens.add(refreshToken);
+        return { revoked: true };
+    }
+    return { revoked: false };
+}
+
 /**
  * Inscrire un nouvel utilisateur.
  *
@@ -158,6 +189,14 @@ async function getMe(userId) {
  */
 async function refreshToken(refreshToken) {
     try {
+        // Verifier que le token n'a pas ete rejete par POST /auth/logout
+        if (revokedRefreshTokens.has(refreshToken)) {
+            const error = new Error("Token de rafraichissement rejete (deconnexion)");
+            error.statusCode = 401;
+            error.isOperational = true;
+            throw error;
+        }
+
         // Verifier et decoder le refreshToken
         const decoded = jwt.verify(refreshToken, JWT_SECRET);
 
@@ -224,5 +263,6 @@ module.exports = {
     register,
     login,
     getMe,
-    refreshToken
+    refreshToken,
+    logout
 };

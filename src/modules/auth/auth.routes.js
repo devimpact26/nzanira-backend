@@ -14,7 +14,7 @@ const express = require("express");
 const router = express.Router();
 
 const authController = require("./auth.controller");
-const { validate, registerSchema, loginSchema, refreshSchema } = require("./auth.validator");
+const { validate, registerSchema, loginSchema, refreshSchema, logoutSchema } = require("./auth.validator");
 
 // Middleware d'authentification JWT (protege les routes)
 const { authenticate } = require("../../middleware/auth.middleware");
@@ -46,6 +46,15 @@ router.get("/me",
 router.post("/refresh",
     validate(refreshSchema),
     authController.refreshToken
+);
+
+// POST /api/auth/logout
+// Deconnexion — token requis
+// Le refreshToken fourni dans le body est rejete (JWT blacklist)
+router.post("/logout",
+    authenticate,
+    validate(logoutSchema),
+    authController.logout
 );
 
 module.exports = router;

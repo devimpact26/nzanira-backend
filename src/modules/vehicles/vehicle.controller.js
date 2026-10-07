@@ -129,6 +129,15 @@ async function createVehicle(req, res, next) {
         // Ex: { driver_id: 1, category_id: 2, plate: "A 123 BC" }
         const vehicleData = req.body;
 
+        // REGLE : un chauffeur ne peut creer un vehicule QUE pour lui-meme.
+        // vehicles.driver_id reference users.id (FK vehicles_ibfk_1)
+        if (req.user.role !== "admin" && Number(vehicleData.driver_id) !== Number(req.user.id)) {
+            return res.status(403).json({
+                success: false,
+                message: "Vous ne pouvez creer un vehicule que pour vous-meme"
+            });
+        }
+
         const vehicle = await vehicleService.createVehicle(vehicleData);
 
         // 201 = "Created" en HTTP
@@ -152,6 +161,15 @@ async function updateVehicle(req, res, next) {
         const { id } = req.params;
         const updates = req.body;
 
+        // REGLE : seul le proprietaire du vehicule (ou un admin) peut le modifier
+        const existing = await vehicleService.getVehicleById(id);
+        if (req.user.role !== "admin" && Number(existing.driver_id) !== Number(req.user.id)) {
+            return res.status(403).json({
+                success: false,
+                message: "Ce vehicule ne vous appartient pas"
+            });
+        }
+
         const vehicle = await vehicleService.updateVehicle(id, updates);
 
         res.json({
@@ -172,6 +190,15 @@ async function updateVehicle(req, res, next) {
 async function deleteVehicle(req, res, next) {
     try {
         const { id } = req.params;
+
+        // REGLE : seul le proprietaire du vehicule (ou un admin) peut le supprimer
+        const existing = await vehicleService.getVehicleById(id);
+        if (req.user.role !== "admin" && Number(existing.driver_id) !== Number(req.user.id)) {
+            return res.status(403).json({
+                success: false,
+                message: "Ce vehicule ne vous appartient pas"
+            });
+        }
 
         await vehicleService.deleteVehicle(id);
 
