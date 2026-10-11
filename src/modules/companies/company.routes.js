@@ -2,7 +2,7 @@ const express    = require('express');
 const router     = express.Router();
 const controller = require('./company.controller');
 const { updateRules, validate } = require('./company.validator');
-const { authenticate } = require('../../middlewares/auth.middleware');
+const { authenticate } = require('../../middleware/auth.middleware');
 
 router.get('/',              authenticate, controller.getAll);
 router.get('/search',        authenticate, controller.search);

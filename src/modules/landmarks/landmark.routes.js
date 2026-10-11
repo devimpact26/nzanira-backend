@@ -2,7 +2,7 @@ const express    = require('express');
 const router     = express.Router();
 const controller = require('./landmark.controller');
 const { createRules, updateRules, validate } = require('./landmark.validator');
-const { authenticate, requireAdmin } = require('../../middlewares/auth.middleware');
+const { authenticate, requireAdmin } = require('../../middleware/auth.middleware');
 
 router.get('/',       controller.getAll);
 router.get('/search', controller.search);
