@@ -1,4 +1,4 @@
-const db = require('../../config/database');
+const { pool: database } = require('../../config/database');
 
 const LandmarkModel = {
 
@@ -9,7 +9,7 @@ const LandmarkModel = {
     if (category) { sql += ` AND category LIKE ?`; params.push(`%${category}%`); }
     sql += ` ORDER BY name ASC LIMIT ? OFFSET ?`;
     params.push(Number(limit), Number(offset));
-    const [rows] = await db.execute(sql, params);
+    const [rows] = await database.execute(sql, params);
     return rows;
   },
 
@@ -18,17 +18,17 @@ const LandmarkModel = {
     const params = [];
     if (commune)  { sql += ` AND commune LIKE ?`;  params.push(`%${commune}%`); }
     if (category) { sql += ` AND category LIKE ?`; params.push(`%${category}%`); }
-    const [rows] = await db.execute(sql, params);
+    const [rows] = await database.execute(sql, params);
     return rows[0].total;
   },
 
   findById: async (id) => {
-    const [rows] = await db.execute(`SELECT * FROM landmarks WHERE id = ?`, [id]);
+    const [rows] = await database.execute(`SELECT * FROM landmarks WHERE id = ?`, [id]);
     return rows[0] || null;
   },
 
   search: async (q) => {
-    const [rows] = await db.execute(
+    const [rows] = await database.execute(
       `SELECT * FROM landmarks WHERE name LIKE ? OR commune LIKE ? ORDER BY name ASC LIMIT 20`,
       [`%${q}%`, `%${q}%`]
     );
@@ -36,7 +36,7 @@ const LandmarkModel = {
   },
 
   findNearby: async ({ latitude, longitude, radius_km, limit }) => {
-    const [rows] = await db.execute(
+    const [rows] = await database.execute(
       `SELECT *, ROUND(6371 * ACOS(
         COS(RADIANS(?)) * COS(RADIANS(latitude))
         * COS(RADIANS(longitude) - RADIANS(?))
@@ -51,11 +51,11 @@ const LandmarkModel = {
   },
 
   create: async ({ name, category, commune, latitude, longitude }) => {
-    const [result] = await db.execute(
+    const [result] = await database.execute(
       `INSERT INTO landmarks (name, category, commune, latitude, longitude) VALUES (?, ?, ?, ?, ?)`,
       [name, category || null, commune || null, latitude, longitude]
     );
-    const [rows] = await db.execute(`SELECT * FROM landmarks WHERE id = ?`, [result.insertId]);
+    const [rows] = await database.execute(`SELECT * FROM landmarks WHERE id = ?`, [result.insertId]);
     return rows[0];
   },
 
@@ -67,13 +67,13 @@ const LandmarkModel = {
     }
     if (updates.length === 0) return null;
     params.push(id);
-    await db.execute(`UPDATE landmarks SET ${updates.join(', ')} WHERE id = ?`, params);
-    const [rows] = await db.execute(`SELECT * FROM landmarks WHERE id = ?`, [id]);
+    await database.execute(`UPDATE landmarks SET ${updates.join(', ')} WHERE id = ?`, params);
+    const [rows] = await database.execute(`SELECT * FROM landmarks WHERE id = ?`, [id]);
     return rows[0] || null;
   },
 
   delete: async (id) => {
-    const [result] = await db.execute(`DELETE FROM landmarks WHERE id = ?`, [id]);
+    const [result] = await database.execute(`DELETE FROM landmarks WHERE id = ?`, [id]);
     return result.affectedRows > 0;
   },
 };

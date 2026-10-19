@@ -6,7 +6,7 @@ const pool = mysql.createPool({
     user: process.env.DB_USER || "root",
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_NAME || "nzanira",
-
+    charset: "utf8mb4",
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -15,9 +15,7 @@ const pool = mysql.createPool({
 async function testDatabaseConnection() {
     try {
         const connection = await pool.getConnection();
-
         console.log("✅ Connexion MySQL réussie !");
-
         connection.release();
     } catch (error) {
         console.error("Erreur de connexion MySQL :", error.message);
@@ -25,7 +23,4 @@ async function testDatabaseConnection() {
     }
 }
 
-module.exports = {
-    pool,
-    testDatabaseConnection
-};
+module.exports = { pool, testDatabaseConnection };

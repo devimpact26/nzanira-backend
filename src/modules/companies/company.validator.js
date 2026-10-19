@@ -1,14 +1,18 @@
-const { body, validationResult } = require('express-validator');
+const Joi = require('joi');
 
-const updateRules = [
-  body('company_name').optional().trim().notEmpty().withMessage('Le nom ne peut pas être vide.').isLength({ max: 200 }),
-  body('business_registry_number').optional().trim().isLength({ max: 100 }),
-];
+const updateRules = Joi.object({
+  company_name:             Joi.string().max(200).optional(),
+  business_registry_number: Joi.string().max(100).optional().allow('', null),
+});
 
-const validate = (req, res, next) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ success: false, message: 'Données invalides.', errors: errors.array().map(e => ({ field: e.path, message: e.msg })) });
+const validate = (schema) => (req, res, next) => {
+  const { error } = schema.validate(req.body, { abortEarly: false });
+  if (error) {
+    return res.status(422).json({
+      success: false,
+      message: 'Données invalides.',
+      errors: error.details.map(e => ({ field: e.path[0], message: e.message })),
+    });
   }
   next();
 };
